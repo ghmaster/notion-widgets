@@ -116,16 +116,24 @@ function render(values) {
 
 async function load() {
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(API_URL + "?t=" + Date.now());
     const values = await res.json();
     if (values.error) throw new Error(values.error);
     render(values);
   } catch (e) {
-    grid.innerHTML = '<div style="color:var(--text-muted); font-size:13px; padding:20px; text-align:center; grid-column:1/-1;">データを取得できませんでした</div>';
+    if (!grid.hasChildNodes()) {
+      grid.innerHTML = '<div style="color:var(--text-muted); font-size:13px; padding:20px; text-align:center; grid-column:1/-1;">データを取得できませんでした</div>';
+    }
   }
 }
 
 load();
+// 60秒ごとに最新値へ自動更新
+setInterval(load, 60000);
+// タブを再表示した時にも即更新
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) load();
+});
 </script>
 </body>
 </html>
