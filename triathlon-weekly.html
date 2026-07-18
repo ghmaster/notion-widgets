@@ -72,42 +72,60 @@
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
-const data = [
-  { label: 'Swim', val: 3.6,   goal: 5.6 },
-  { label: 'Bike', val: 129.8, goal: 150 },
-  { label: 'Run',  val: 4.0,   goal: 40 }
-];
+const API_URL = "https://triathlon-api.keisuke322.workers.dev";
+
+// 目標値（週あたり km）
+const GOALS = { Swim: 5.6, Bike: 150, Run: 40 };
 
 const grid = document.getElementById('grid');
 const r = 52, C = 2 * Math.PI * r;
 
-data.forEach(d => {
-  const pct = Math.min(100, d.val / d.goal * 100);
-  const off = C * (1 - pct / 100);
-  const remain = Math.max(0, Math.round((d.goal - d.val) * 10) / 10);
-
-  const cell = document.createElement('div');
-  cell.className = 'cell';
-  cell.innerHTML = `
-    <div class="ring-wrap">
-      <svg viewBox="0 0 134 134">
-        <circle cx="67" cy="67" r="${r}" fill="none" stroke="var(--track)" stroke-width="11"/>
-        <circle cx="67" cy="67" r="${r}" fill="none" stroke="var(--ring)" stroke-width="11"
-          stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"
-          transform="rotate(-90 67 67)"/>
-      </svg>
-      <div class="center">
-        <span class="total">${d.val}</span>
-        <span class="sub"><i data-lucide="target"></i>${d.goal}</span>
-        <span class="sub remain"><i data-lucide="flag"></i>${remain}</span>
+function render(values) {
+  const data = [
+    { label: 'Swim', val: values.swim, goal: GOALS.Swim },
+    { label: 'Bike', val: values.bike, goal: GOALS.Bike },
+    { label: 'Run',  val: values.run,  goal: GOALS.Run }
+  ];
+  grid.innerHTML = '';
+  data.forEach(d => {
+    const pct = Math.min(100, d.val / d.goal * 100);
+    const off = C * (1 - pct / 100);
+    const remain = Math.max(0, Math.round((d.goal - d.val) * 10) / 10);
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML = `
+      <div class="ring-wrap">
+        <svg viewBox="0 0 134 134">
+          <circle cx="67" cy="67" r="${r}" fill="none" stroke="var(--track)" stroke-width="11"/>
+          <circle cx="67" cy="67" r="${r}" fill="none" stroke="var(--ring)" stroke-width="11"
+            stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"
+            transform="rotate(-90 67 67)"/>
+        </svg>
+        <div class="center">
+          <span class="total">${d.val}</span>
+          <span class="sub"><i data-lucide="target"></i>${d.goal}</span>
+          <span class="sub remain"><i data-lucide="flag"></i>${remain}</span>
+        </div>
       </div>
-    </div>
-    <span class="label">${d.label}</span>
-  `;
-  grid.appendChild(cell);
-});
+      <span class="label">${d.label}</span>
+    `;
+    grid.appendChild(cell);
+  });
+  lucide.createIcons();
+}
 
-lucide.createIcons();
+async function load() {
+  try {
+    const res = await fetch(API_URL);
+    const values = await res.json();
+    if (values.error) throw new Error(values.error);
+    render(values);
+  } catch (e) {
+    grid.innerHTML = '<div style="color:var(--text-muted); font-size:13px; padding:20px; text-align:center; grid-column:1/-1;">データを取得できませんでした</div>';
+  }
+}
+
+load();
 </script>
 </body>
 </html>
