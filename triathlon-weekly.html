@@ -6,24 +6,16 @@
 <title>Weekly Triathlon</title>
 <style>
   :root {
-    --text-primary: #e8e8e6;
+    --text-primary: #ececea;
     --text-secondary: #9a9a95;
-    --text-muted: #6a6a66;
+    --text-muted: #6f6f6a;
     --track: rgba(255,255,255,0.15);
     --ring: #ffffff;
-  }
-  @media (prefers-color-scheme: light) {
-    :root {
-      --text-primary: #1a1a19;
-      --text-secondary: #6a6a66;
-      --text-muted: #9a9a95;
-      --track: rgba(120,120,120,0.25);
-      --ring: #1a1a19;
-    }
+    --bg: #191919;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
-    background: transparent;
+    background: var(--bg);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
@@ -31,7 +23,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    padding: 10px 6px;
+    padding: 16px 8px;
     max-width: 460px;
     margin: 0 auto;
   }
